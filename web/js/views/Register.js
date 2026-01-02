@@ -4,7 +4,7 @@ export default function RegisterView(){
          <div class="auth-container">
       <h2>Register</h2>
 
-      <form id="login-form" class="auth-form">
+      <form id="register-form" data-form="register" class="auth-form">
         <input
           type="text"
           name="email"
@@ -25,7 +25,7 @@ export default function RegisterView(){
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
       </form>
 
       <p class="auth-footer">

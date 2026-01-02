@@ -46,14 +46,38 @@ document.addEventListener("click", (e)=> {
 
 
 //checking for form submissions here
-document.addEventListener("submit", (e) => {
+document.addEventListener("submit", async (e) => {
     const form = e.target.closest('[data-form]')
     if(!form) return;
     
     e.preventDefault();
 
-    const formName = form.dataset.from;
+    const formName = form.dataset.form;
+
     const data = Object.fromEntries(new FormData(form))
+
+    if(formName === "register"){
+         try {
+            console.log("inside the try block of the register form")
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+       if (!res.ok) {
+        console.error("error sending the register form data: ", result)
+        navigateTo("/")
+      }
+
+        }catch(e){
+           console.error(e);
+        }
+    }
 
      console.log("form:", formName, data);
 })

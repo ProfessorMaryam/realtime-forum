@@ -23,6 +23,7 @@ func main() {
 	http.HandleFunc("/api/posts", handlers.PostsHandler) 
 
 	http.HandleFunc("/api/comments", handlers.CommentsHandler)
+	http.HandleFunc("/api/register", handlers.RegisterHandler)
 
 
 
