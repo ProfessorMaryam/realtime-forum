@@ -1,3 +1,4 @@
+
 export default async function HomeView() {
   let posts = [];
   try {
@@ -50,7 +51,7 @@ export default async function HomeView() {
                 </div>
 
                 <div class="comments">
-                  <a class="comment-btn" href="/thread?post=${p.id}#comment-input" style="text-decoration:none;">
+                  <a class="comment-btn" href="/thread?post=${p.id}" style="text-decoration:none;">
                     <span class="material-icons">comment</span>
                     <span> Comments</span>
                   </a>

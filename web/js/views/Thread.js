@@ -1,87 +1,89 @@
 export default async function ThreadView() {
-    return `<div class="focus-post">
-                <h2>@mohamed</h2>
+    const params = new URLSearchParams(location.search);
+    const postId = params.get("post");
 
-                <div class="frame">
-                    <h3>clickbait</h3>
-                    <div class="content">
-                        <pre>clickbaitrt</pre>
-                    </div>
-                    <div class="post-meta" style="display: flex; justify-content: space-between;">
+    if (!postId) {
+        return `<div class="home"><p>Missing post id.</p></div>`;
+    }
 
-                        <form style="margin-top: 10px;" method="POST" action="/like" style="display: inline;">
-                            <input type="hidden" name="post_id" value="{{.Post.ID}}">
-                            <button type="submit" name="type" value="like" style="display: inline;"
-                                class="like-btn">
-                                <span class="material-icons">thumb_up</span>
-                                <span>22</span>
-                            </button>
-                            <button type="submit" name="type" value="dislike" style="display: inline;"
-                                class="dislike-btn">
-                                <span class="material-icons">thumb_down</span>
-                                <span>6</span>
-                            </button>
-                        </form>
+    let comments = [];
 
-                        <div class="category-flairs" style="display: inline; margin-top: 10px;">
-                            <span class="category-flair">music</span>
-                            <span class="category-flair">gaming</span>
-                        </div>
-                    </div>
+    try {
+        const res = await fetch(`/api/comments?post=${encodeURIComponent(postId)}`);
+        if (res.ok) {
+            comments = await res.json();
+        }
+    } catch {
+        comments = [];
+    }
 
+    function escapeHtml(str) {
+        if (!str) return "";
+        return String(str).replace(/[&<>'\"]/g, (m) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[m]));
+    }
 
-                </div>
-            </div>
-
-            <div class="comment-input-container">
+    // Comments section content (this is the ONLY conditional part)
+    const commentsHtml = comments.length > 0
+        ? comments.map(c => `
+            <div class="comment-block">
                 <div class="comment-user">
                     <div class="username">
-                        <h2>@michaeljordan</h2>
+                        <h2>${escapeHtml(c.author)}</h2>
                     </div>
                 </div>
-                <div class="comment-input-section" id="comment-input">
-                    <form method="POST" action="/comment">
-                        <input type="hidden" name="post_id" value="{{.Post.ID}}">
-                        <textarea name="content" id="comment-input" placeholder="Write your comment..."></textarea>
-                        <button class="post-comment-btn">Post Comment</button>
-                    </form>
+                <div class="content1">
+                    <pre>${escapeHtml(c.content)}</pre>
                 </div>
             </div>
+        `).join("")
+        : `<p class="no-comments">No comments yet. Be the first to comment!</p>`;
 
-            <!-- place a comment count here -->
-        <div class="comment-count">
-                <span>23 Comments</span>
+    return `
+        <!-- POST (always visible) -->
+        <div class="focus-post">
+            <h2>@author</h2>
+
+            <div class="frame">
+                <h3>Post title</h3>
+                <div class="content">
+                    <pre>Post content placeholder</pre>
+                </div>
+            </div>
         </div>
-        <div class="comment-block" style="display: block;">
+
+        <!-- COMMENT FORM (always visible) -->
+        <div class="comment-input-container">
             <div class="comment-user">
                 <div class="username">
-                    <h2>james</h2>
+                    <h2>@you</h2>
                 </div>
             </div>
-            <div class="content1">
-                <pre>sdnsdjnsjkdsk</pre>
-            </div>
 
-            <div class="comment-meta">
-                <form method="POST" action="/like">
-                    <input type="hidden" name="post_id" value="{{.PostID}}">
-                    <input type="hidden" name="comment_id" value="{{.ID}}">
-
-                    <button type="submit" name="type" value="like" style="display: inline;"
-                        class="like-btn">
-                        <span class="material-icons">thumb_up</span>
-                        <span>22</span>
-                    </button>
-                    <button type="submit" name="type" value="dislike" style="display: inline;"
-                        class="dislike-btn">
-                        <span class="material-icons">thumb_down</span>
-                        <span>2</span>
-                    </button>
-                </form>
-            </div>
+            <form class="comment-input-section">
+                <input type="hidden" name="post_id" value="${escapeHtml(postId)}">
+                <textarea
+                    name="content"
+                    placeholder="Write your comment..."
+                    required
+                ></textarea>
+                <button class="post-comment-btn">Post Comment</button>
+            </form>
         </div>
-        <p style="color: white;">No Comments yet, be the first to comment!</p>
-    </div>
-`;
-}
 
+        <!-- COMMENT COUNT (always visible) -->
+        <div class="comment-count">
+            <span>${comments.length} Comments</span>
+        </div>
+
+        <!-- COMMENTS LIST (content changes) -->
+        <div id="comments-list">
+            ${commentsHtml}
+        </div>
+    `;
+}

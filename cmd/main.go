@@ -22,6 +22,8 @@ func main() {
 	// define the endpoint for the posts, this will be used by the frontend to fetch data and populate the js views
 	http.HandleFunc("/api/posts", handlers.PostsHandler) 
 
+	http.HandleFunc("/api/comments", handlers.CommentsHandler)
+
 
 
 	// Start server

@@ -20,7 +20,6 @@ func GetAllPosts()([]models.Post, error){
         FROM posts p
         JOIN users u ON p.user_id = u.id
         ORDER BY p.created_at DESC
-        LIMIT 5
     `)
 			if err != nil {
 			fmt.Println("error occured getting all posts: ", err)
