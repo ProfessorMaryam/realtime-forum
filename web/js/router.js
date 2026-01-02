@@ -9,6 +9,7 @@ const routes = [
     {path: "/thread" , view:() => import("./views/Thread.js") },  
     {path: "/chat" , view:() => import("./views/Chat.js") },
     {path: "/create" , view:() => import("./views/Create.js") },
+    {path: "/register", view:()=> import("./views/Register.js")},
 ]
 
 

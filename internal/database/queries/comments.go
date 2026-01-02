@@ -45,3 +45,4 @@ func GetPostComments(postID int)(models.Post, []models.Comment, error) {
 	return post, comments, nil
 
 }
+
