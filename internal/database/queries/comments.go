@@ -9,7 +9,7 @@ import (
 
 // Comment queries here
 
-func GetPostComments(postID int) ([]models.Comment, error) {
+func GetPostComments(postID int)(models.Post, []models.Comment, error) {
 	rows, err := database.DB.Query(`
 	SELECT c.id, c.content, u.username, c.created_at
 	FROM comments c
@@ -20,11 +20,17 @@ func GetPostComments(postID int) ([]models.Comment, error) {
 
 	if err != nil {
 		fmt.Println("error occured getting all comments for this post: ", err)
-		return nil, err
+		return models.Post{}, nil, err
 	}
 	defer rows.Close()
 
 	var comments []models.Comment
+	var post models.Post 
+	post, err = GetPost(postID)
+	if err != nil {
+		fmt.Println("error occured fetching the post info: ", err)
+		return models.Post{}, nil, err
+	}
 
 	for rows.Next() {
 		var comment models.Comment
@@ -36,6 +42,6 @@ func GetPostComments(postID int) ([]models.Comment, error) {
 		comments = append(comments, comment)
 	}
 
-	return comments, nil
+	return post, comments, nil
 
 }

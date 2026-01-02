@@ -6,14 +6,19 @@ export default async function ThreadView() {
         return `<div class="home"><p>Missing post id.</p></div>`;
     }
 
+    let post = null;
     let comments = [];
 
     try {
         const res = await fetch(`/api/comments?post=${encodeURIComponent(postId)}`);
         if (res.ok) {
-            comments = await res.json();
+            const data = await res.json();
+            // endpoint returns { post: {...}, comments: [...] }
+            post = data.post || null;
+            comments = data.comments || [];
         }
     } catch {
+        post = null;
         comments = [];
     }
 
@@ -28,13 +33,23 @@ export default async function ThreadView() {
         }[m]));
     }
 
-    // Comments section content (this is the ONLY conditional part)
+    function formatDate(t) {
+        if (!t) return "";
+        try {
+            const d = new Date(t);
+            return isNaN(d) ? "" : d.toLocaleString();
+        } catch {
+            return "";
+        }
+    }
+
     const commentsHtml = comments.length > 0
         ? comments.map(c => `
             <div class="comment-block">
                 <div class="comment-user">
                     <div class="username">
                         <h2>${escapeHtml(c.author)}</h2>
+                        <span class="comment-date">${formatDate(c.created_at)}</span>
                     </div>
                 </div>
                 <div class="content1">
@@ -44,15 +59,24 @@ export default async function ThreadView() {
         `).join("")
         : `<p class="no-comments">No comments yet. Be the first to comment!</p>`;
 
+    const postTitle = post ? escapeHtml(post.title) : "Post not found";
+    const postAuthor = post ? `@${escapeHtml(post.author)}` : "@unknown";
+    const postContent = post ? escapeHtml(post.content || "") : "";
+    const postDate = post ? formatDate(post.created_at) : "";
+    
+
     return `
         <!-- POST (always visible) -->
         <div class="focus-post">
-            <h2>@author</h2>
+            <h2>${postAuthor}</h2>
 
             <div class="frame">
-                <h3>Post title</h3>
+                <h3>${postTitle}</h3>
                 <div class="content">
-                    <pre>Post content placeholder</pre>
+                    <pre>${postContent}</pre>
+                </div>
+                <div class="post-meta">
+                    <span class="post-date">${postDate}</span>
                 </div>
             </div>
         </div>

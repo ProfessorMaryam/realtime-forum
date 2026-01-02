@@ -6,10 +6,16 @@ import (
 	"strconv"
 	"encoding/json"
     "real-time-forum/internal/database/queries"
-	"fmt"
+	    "real-time-forum/internal/models"
+
 )
 
 // Comments handler here
+
+type PostComment struct  {
+    Post     models.Post `json:"post"`
+    Comments []models.Comment  `json:"comments"`
+}
 
 
 func CommentsHandler(w http.ResponseWriter, r *http.Request){
@@ -21,20 +27,21 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request){
         return
 	}
 
-	fmt.Println("this is query string: ", q)
-
-
 	   postID, err := strconv.Atoi(q)
     if err != nil {
         http.Error(w, "invalid post id", http.StatusBadRequest)
         return
     }
 
-	comments, err:= queries.GetPostComments(postID)
+	post, comments, err:= queries.GetPostComments(postID)
 	if err != nil {
-		http.Error(w, "Failed to load comments", http.StatusInternalServerError)
+		http.Error(w, "Failed to load post and comments", http.StatusInternalServerError)
 		return
 	}
-	json.NewEncoder(w).Encode(comments)
+
+
+    toEncode := PostComment{ Post : post, Comments: comments, } 
+	
+	json.NewEncoder(w).Encode(toEncode)
 
 }

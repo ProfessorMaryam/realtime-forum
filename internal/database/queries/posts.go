@@ -41,3 +41,31 @@ func GetAllPosts()([]models.Post, error){
 	
 	return posts, nil
 }
+
+
+func GetPost(postID int) (models.Post, error) {
+	var post models.Post
+
+	row := database.DB.QueryRow(
+		`SELECT 
+    p.id, p.title, p.content, u.username, p.created_at
+FROM posts p
+JOIN users u ON p.user_id = u.id
+WHERE p.id = ?`,
+		postID,
+	)
+
+	err := row.Scan(
+		&post.ID,
+		&post.Title,
+		&post.Content,
+		&post.Author,
+		&post.CreatedAt,
+	)
+
+	if err != nil {
+		return models.Post{}, err
+	}
+
+	return post, nil
+}
