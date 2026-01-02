@@ -11,7 +11,9 @@ import (
 
 // fetches all the posts and returns an array of structs (of type Post)
 
+
 func GetAllPosts()([]models.Post, error){
+	
 
  rows, err := database.DB.Query(`
         SELECT p.id, p.title, p.content, u.username, p.created_at
