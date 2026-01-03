@@ -6,8 +6,8 @@ export default function LoginView() {
       <form id="login-form" data-form="login" class="auth-form">
         <input
           type="text"
-          name="identifier"
-          placeholder="Username or Email"
+          name="email"
+          placeholder="Email"
           required
         />
 

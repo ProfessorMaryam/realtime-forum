@@ -16,7 +16,7 @@ func UserExists(username, email string) (bool, error) {
 	err := database.DB.QueryRow(`
 		SELECT 1
 		FROM users
-		WHERE username = ? AND email = ?
+		WHERE username = ? OR email = ?
 		LIMIT 1
 	`, username, email).Scan(&exists)
 
@@ -36,7 +36,6 @@ func UserExists(username, email string) (bool, error) {
 
 func EmailExists(email string) (bool, error) {
 	var exists int
-
 	err := database.DB.QueryRow(`
 		SELECT 1
 		FROM users
@@ -44,20 +43,16 @@ func EmailExists(email string) (bool, error) {
 		LIMIT 1
 	`, email).Scan(&exists)
 
-
+	fmt.Println("DOES USER EXIST????  ", exists)
 
 	if err == sql.ErrNoRows {
 		return false, nil
 	}
-
 	if err != nil {
 		return false, err
 	}
-
 	return true, nil
 }
-
-
 
 func CreateUser(username, email, password string) error {
 	_, err := database.DB.Exec(`
@@ -66,4 +61,30 @@ func CreateUser(username, email, password string) error {
 	`, username, email, password, time.Now())
 
 	return err
+}
+
+func CheckLoginCredentials(email, password string) (bool, error) {
+	var storedHash string
+
+	err := database.DB.QueryRow(`
+		SELECT password_hash
+		FROM users
+		WHERE email = ?
+	`, email).Scan(&storedHash)
+
+	// email does not exist
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	// plain-text comparison for now (replace with proper hashing later)
+	if storedHash != password {
+		return false, nil
+	}
+
+	return true, nil
 }

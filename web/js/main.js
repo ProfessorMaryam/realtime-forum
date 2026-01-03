@@ -27,7 +27,7 @@ document.addEventListener("click", (e) => {
     navigateTo(link.href);
 
     console.log("LINK REF IS: ", link.href) //debug
-    
+
     return;
   }
 
@@ -49,6 +49,8 @@ document.addEventListener("click", (e) => {
 
 //checking for form submissions here
 document.addEventListener("submit", async (e) => {
+  console.count("SUBMIT COUNT");
+
   const form = e.target.closest('[data-form]')
   if (!form) return;
 
@@ -71,53 +73,44 @@ document.addEventListener("submit", async (e) => {
         body: JSON.stringify(data)
       });
 
-      const result = await res.text();
+      const result = await res.json();
 
-      if (!res.ok) {
-        console.error("error sending the register form data: ", result)
-        return
-      }
-
-         const parsed = result ? JSON.parse(result) : {};
-    console.log("register success:", parsed);
-
+if (!res.ok) {
+  alert(result.error);
+  return;
+}
 
       navigateTo("/")
 
 
     } catch (e) {
-      console.error(e);
+      console.error("HERE IS THE ERROR IN THE REGISTER:", e);
     }
   }
-if (formName === "login") {
-  try {
-    console.log("inside the try block of the login form")
+  if (formName === "login") {
+    try {
+      console.log("inside the try block of the login form")
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
+      const res = await fetch("/api/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include",
+  body: JSON.stringify(data)
+});
 
-    const result = await res.text();
+const result = await res.json();
 
-    if (!res.ok) {
-      console.error("login error:", result);
-      return;
-    }
-
-    // If you EXPECT JSON on success:
-    const parsed = result ? JSON.parse(result) : {};
-    console.log("login success:", parsed);
-
-    navigateTo("/");
-
-  } catch (e) {
-    console.error("HERE IS THE ERROR:", e);
-  }
+if (!res.ok) {
+  alert(result.error);
+  return;
 }
+
+navigateTo("/");
+
+    } catch (e) {
+      console.error("HERE IS THE ERROR IN THE LOGIN:", e);
+    }
+  }
 
   console.log("form:", formName, data);
 })
