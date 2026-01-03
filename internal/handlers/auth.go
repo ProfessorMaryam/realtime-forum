@@ -58,14 +58,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name: "sessionID",
-		Value: req.Username,
-		Path: "/",
-		HttpOnly: true,
-		Secure: false,
-		MaxAge: 60*60*24*7,
-	})
+
+	cookie , err:= queries.AddSession(req.Email)
+
+	http.SetCookie(w, &cookie)
 
 	fmt.Println("SUCCESSSSS")
 
