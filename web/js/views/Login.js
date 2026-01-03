@@ -3,7 +3,7 @@ export default function LoginView() {
     <div class="auth-container">
       <h2>Login</h2>
 
-      <form id="login-form" class="auth-form">
+      <form id="login-form" data-form="login" class="auth-form">
         <input
           type="text"
           name="identifier"

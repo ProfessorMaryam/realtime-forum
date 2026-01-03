@@ -1,11 +1,6 @@
 //auth.go
 package models
 
-
-import (
-	"time"
-)
-
 //auth structs here
 
 
@@ -15,10 +10,7 @@ type RegisterRequest struct{
 	Password string `json:"password"`
 }
 
-
-type Cookie struct {
-	Username string 
-	LoginAt time.Time 
-	ExpireAt time.Time 
+type LoginRequest struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
 }
-

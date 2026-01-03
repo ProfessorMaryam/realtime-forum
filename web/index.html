@@ -62,10 +62,11 @@
             <div class="user-bar">
                 <h2> User Actions</h2>
                 {{if .IsGuest}}
-                <a href="/login" style="text-decoration:none;">
+             <!--THIS WHERE THE LOGIN SHOULD BE. WILL BE ADDED LATER-->
+                {{else}}
+                   <a href="/login" style="text-decoration:none;">
                     <h1>Login</h1>
                 </a>
-                {{else}}
                 <a href="/logout" style="text-decoration:none;">
                     <h1>Logout</h1>
                 </a>

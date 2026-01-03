@@ -10,13 +10,13 @@ import (
 )
 
 // chekc if either exist
-func UserOrEmailExists(username, email string) (bool, error) {
+func UserExists(username, email string) (bool, error) {
 	var exists int
 
 	err := database.DB.QueryRow(`
 		SELECT 1
 		FROM users
-		WHERE username = ? OR email = ?
+		WHERE username = ? AND email = ?
 		LIMIT 1
 	`, username, email).Scan(&exists)
 
@@ -33,6 +33,31 @@ func UserOrEmailExists(username, email string) (bool, error) {
 
 	return true, nil
 }
+
+func EmailExists(email string) (bool, error) {
+	var exists int
+
+	err := database.DB.QueryRow(`
+		SELECT 1
+		FROM users
+		WHERE email = ?
+		LIMIT 1
+	`, email).Scan(&exists)
+
+
+
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+
 
 func CreateUser(username, email, password string) error {
 	_, err := database.DB.Exec(`

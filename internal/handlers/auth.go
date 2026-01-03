@@ -38,7 +38,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 	fmt.Println(req.Password)
 	fmt.Println(req.Email)
 
-		exists, err := queries.UserOrEmailExists(req.Username, req.Email)
+		exists, err := queries.UserExists(req.Username, req.Email)
 	if err != nil {
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
@@ -63,7 +63,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 
 	http.SetCookie(w, &cookie)
 
-	fmt.Println("SUCCESSSSS")
+	fmt.Println("SUCCESSSSS REGISTERING")
 
 
 		json.NewEncoder(w).Encode(map[string]string{
@@ -72,3 +72,58 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 
 }
 
+func LoginHandler(w http.ResponseWriter, r *http.Request){
+			w.Header().Set("Content-Type", "application/json")
+if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req models.LoginRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil{
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	exists, err := queries.EmailExists(req.Email)
+	if err != nil {
+		http.Error(w, "Server error", http.StatusInternalServerError)
+		return
+	}
+
+	if !exists {
+			w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error":"User does not exist. Please Register",
+		})
+		return
+	}
+
+	cookie , err:= queries.AddSession(req.Email)
+
+	http.SetCookie(w, &cookie)
+
+	fmt.Println("SUCCESSSSS LOGIN")
+
+
+		json.NewEncoder(w).Encode(map[string]string{
+		"message": "Registration successful",
+	})
+
+}
+
+
+func HandleLogout(w http.ResponseWriter, r *http.Request){
+			w.Header().Set("Content-Type", "application/json")
+if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	
+
+
+}

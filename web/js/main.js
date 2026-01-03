@@ -37,10 +37,23 @@ document.addEventListener("click", (e) => {
     // in the beginnign we wont but as we move up and intiate the chats we will definitely will
     console.log("action:", action);
     if (action == "Chat") {
-      navigateTo("/chat")
     } else if (action == "Create") {
       navigateTo("/create")
     }
+
+  //   switch (action){
+  //  case "Chat":
+  //    navigateTo("/chat")
+
+  //   case "Create":
+  //     navigateTo("/create")
+
+
+
+  //   default:
+  //     navigateTo("/")
+  //   }
+ 
   }
 });
 
@@ -81,6 +94,32 @@ document.addEventListener("submit", async (e) => {
 
     } catch (e) {
       console.error(e);
+    }
+  }
+
+  if (formName === "login"){
+    try{
+            console.log("inside the try block of the login form")
+            const res = fetch ("/api/login", {
+              method : "POST",
+              headers: {
+              "Content-Type": "application/json"
+
+              },
+              body: JSON.stringify(data)
+            });
+
+               if (!res.ok) {
+        console.error("error sending the register form data: ", result)
+        return
+      }
+
+      navigateTo("/")
+
+
+    }catch(e){
+            console.error(e);
+
     }
   }
 

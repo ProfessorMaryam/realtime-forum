@@ -25,6 +25,8 @@ func main() {
 	http.HandleFunc("/api/comments", handlers.CommentsHandler)
 	http.HandleFunc("/api/register", handlers.RegisterHandler)
 
+	http.HandleFunc("/api/login", handlers.LoginHandler)
+
 
 
 	// Start server

@@ -53,14 +53,8 @@ func AddSession(email string) (http.Cookie, error) {
 	return cookie, nil
 }
 
-func DeletePastSessions(email string) error {
-	var userID int
-	err := database.DB.QueryRow("SELECT userID FROM User WHERE email = ?",
-		email).Scan(&userID)
-	if err != nil {
-		return err
-	}
-	_, err = database.DB.Exec("UPDATE sessions SET valid = false WHERE userID = ?",
+func DeletePastSessions(userID int) error {
+	_, err := database.DB.Exec("UPDATE sessions SET valid = false WHERE userID = ?",
 		userID)
 	if err != nil {
 		return err
