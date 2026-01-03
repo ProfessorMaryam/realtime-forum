@@ -10,6 +10,7 @@ import (
 	// "real-time-forum/internal/database/queries"
 	"real-time-forum/internal/database/queries"
 	"real-time-forum/internal/models"
+	"real-time-forum/internal/cookie"
 	"fmt"
 )
 
@@ -58,13 +59,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-
 	cookie , err:= queries.AddSession(req.Email)
 
 	http.SetCookie(w, &cookie)
 
 	fmt.Println("SUCCESSSSS REGISTERING")
-
 
 		json.NewEncoder(w).Encode(map[string]string{
 		"message": "Registration successful",
@@ -110,20 +109,38 @@ if r.Method != http.MethodPost {
 
 
 		json.NewEncoder(w).Encode(map[string]string{
-		"message": "Registration successful",
+		"message": "Login successful",
 	})
 
 }
 
 
-func HandleLogout(w http.ResponseWriter, r *http.Request){
+func LogoutHandler(w http.ResponseWriter, r *http.Request){
 			w.Header().Set("Content-Type", "application/json")
 if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	
+		c, err := r.Cookie("sessionID")
+		if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	sessionError := queries.DeletePastSessions(c.Value); if sessionError != nil{
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	cookie.DeleteCookie(w,r)
+
+
+			json.NewEncoder(w).Encode(map[string]string{
+		"message": "Logout successful",
+	})
+
+
 
 
 }

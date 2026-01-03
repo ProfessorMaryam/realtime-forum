@@ -1,14 +1,13 @@
 package queries
 
 import (
-	"github.com/google/uuid"
+	"errors"
+	"net/http"
 	"real-time-forum/internal/database"
 	"time"
-	"net/http"
-	"errors"
 
+	"github.com/google/uuid"
 )
-
 
 func GenerateToken() (string, error) {
 	u, err := uuid.NewRandom()
@@ -38,7 +37,7 @@ func AddSession(email string) (http.Cookie, error) {
 	}
 
 	_, err = database.DB.Exec("INSERT INTO sessions (session_id, user_id, user_agent, real_ip, expires_at, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-		value, userID, "agent","0.0.0.0", expires, created)
+		value, userID, "agent", "0.0.0.0", expires, created)
 	if err != nil {
 		return http.Cookie{}, errors.New("database insert error")
 	}
@@ -53,24 +52,24 @@ func AddSession(email string) (http.Cookie, error) {
 	return cookie, nil
 }
 
-func DeletePastSessions(userID int) error {
-	_, err := database.DB.Exec("UPDATE sessions SET valid = false WHERE userID = ?",
-		userID)
+// all sessions for that user as expired (sets expires_at to now).
+func DeletePastSessions(sessionID string) error {
+	var userID int
+	err := database.DB.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", sessionID).Scan(&userID)
 	if err != nil {
 		return err
 	}
-	return nil
+
+	_, err = database.DB.Exec("UPDATE sessions SET expires_at = ? WHERE user_id = ?", time.Now(), userID)
+	return err
 }
 
 func ValidSession(value string) bool {
-
-	var expirey time.Time
-	var valid bool
-	err := database.DB.QueryRow("SELECT expiresAt, valid FROM sessions WHERE sessionID = ?",
-		value).Scan(&expirey, &valid)
+	var expiry time.Time
+	err := database.DB.QueryRow("SELECT expires_at FROM sessions WHERE session_id = ?", value).Scan(&expiry)
 	if err != nil {
 		return false
 	}
 
-	return time.Now().Before(expirey) && valid
+	return time.Now().Before(expiry)
 }

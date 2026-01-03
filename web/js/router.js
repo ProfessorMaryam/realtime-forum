@@ -5,6 +5,8 @@ const routes = [
     {path: "/" , view:() => import("./views/Home.js") },
     {path: "/posts" , view:() => import("./views/Home.js") },
     {path: "/login" , view:() => import("./views/Login.js") },
+    {path: "/logout" , view:() => import("./views/Home.js") },
+
     {path: "/signup" , view:() => import("./views/Signup.js") },
     {path: "/thread" , view:() => import("./views/Thread.js") },  
     {path: "/chat" , view:() => import("./views/Chat.js") },

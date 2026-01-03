@@ -25,6 +25,9 @@ document.addEventListener("click", (e) => {
   if (link) {
     e.preventDefault();
     navigateTo(link.href);
+
+    console.log("LINK REF IS: ", link.href) //debug
+    
     return;
   }
 
@@ -40,20 +43,6 @@ document.addEventListener("click", (e) => {
     } else if (action == "Create") {
       navigateTo("/create")
     }
-
-  //   switch (action){
-  //  case "Chat":
-  //    navigateTo("/chat")
-
-  //   case "Create":
-  //     navigateTo("/create")
-
-
-
-  //   default:
-  //     navigateTo("/")
-  //   }
- 
   }
 });
 
@@ -82,12 +71,16 @@ document.addEventListener("submit", async (e) => {
         body: JSON.stringify(data)
       });
 
-      const result = await res.json();
+      const result = await res.text();
 
       if (!res.ok) {
         console.error("error sending the register form data: ", result)
         return
       }
+
+         const parsed = result ? JSON.parse(result) : {};
+    console.log("register success:", parsed);
+
 
       navigateTo("/")
 
@@ -96,32 +89,35 @@ document.addEventListener("submit", async (e) => {
       console.error(e);
     }
   }
+if (formName === "login") {
+  try {
+    console.log("inside the try block of the login form")
 
-  if (formName === "login"){
-    try{
-            console.log("inside the try block of the login form")
-            const res = fetch ("/api/login", {
-              method : "POST",
-              headers: {
-              "Content-Type": "application/json"
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
 
-              },
-              body: JSON.stringify(data)
-            });
+    const result = await res.text();
 
-               if (!res.ok) {
-        console.error("error sending the register form data: ", result)
-        return
-      }
-
-      navigateTo("/")
-
-
-    }catch(e){
-            console.error(e);
-
+    if (!res.ok) {
+      console.error("login error:", result);
+      return;
     }
+
+    // If you EXPECT JSON on success:
+    const parsed = result ? JSON.parse(result) : {};
+    console.log("login success:", parsed);
+
+    navigateTo("/");
+
+  } catch (e) {
+    console.error("HERE IS THE ERROR:", e);
   }
+}
 
   console.log("form:", formName, data);
 })

@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/api/register", handlers.RegisterHandler)
 
 	http.HandleFunc("/api/login", handlers.LoginHandler)
+	http.HandleFunc("/api/logout", handlers.LogoutHandler)
 
 
 
