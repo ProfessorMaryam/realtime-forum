@@ -2,7 +2,9 @@
 package models
 
 
-
+import (
+	"time"
+)
 
 //auth structs here
 
@@ -13,4 +15,10 @@ type RegisterRequest struct{
 	Password string `json:"password"`
 }
 
+
+type Cookie struct {
+	Username string 
+	LoginAt time.Time 
+	ExpireAt time.Time 
+}
 
